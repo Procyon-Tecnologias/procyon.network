@@ -21,7 +21,7 @@ options:
     multipart/form-data. The field name may be set through "field" option.
     type: str
   content:
-    description: 
+    description:
     - The backup file content.
     type: str
   field:
@@ -35,18 +35,18 @@ options:
     - Name of the backup file
     type: str
     default: "backup.cfg"
-  extra_data: 
+  extra_data:
     description:
     - Data to be sent within the request form.
     type: dict[str, str]]
     default: None
-  params: 
+  params:
     description:
     - Parameters to be sent with the request. It may contain the authentication
     credentials or any other required parameter
     type: dict[str, str]]
     default: None
-  headers: 
+  headers:
     description:
     - Headers to be sent with the request. It may contain the authentication
     credentials or any other required parameter
@@ -79,6 +79,14 @@ exception:
 
 
 from ansible.module_utils.basic import AnsibleModule
+from codecs import register_error
+
+
+def strict_handler(exception):
+    return u"", exception.end
+
+
+register_error("strict", strict_handler)
 
 
 def safe(val):
@@ -98,8 +106,9 @@ def safe(val):
 
 
 def upload_backup(module: AnsibleModule) -> requests.Response:
+    print(module)
     url = module.params['url']
-    content = safe(module.params['content'])
+    content = module.params.get('content')
     field = module.params.get('field', 'backup')
     filename = module.params.get('filename', 'backup.cfg')
     params = module.params.get('params', {})
@@ -112,19 +121,17 @@ def upload_backup(module: AnsibleModule) -> requests.Response:
         data[key] = value
 
     files = {}
-    files[field] = (filename, content)
+    files[field] = (
+        filename, safe(content))
 
     return requests.post(
-        url,
-        data=data,
-        files=files,
-        headers=headers,
-        params=params,
-    )
+        url, data=data, files=files,
+        headers=headers, params=params)
 
 
 def main():
     """main entry point for execution"""
+
 
     argument_spec = dict(
         url=dict(type='str', required=True),

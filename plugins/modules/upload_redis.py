@@ -83,8 +83,7 @@ def upload_backup(module: AnsibleModule) -> int:
     name = module.params['name']
     content = module.params['content']
     redis_command = module.params['redis_command']
-    data = {}
-    
+
     client = redis.Redis(
         host=host,
         port=port,
@@ -93,25 +92,26 @@ def upload_backup(module: AnsibleModule) -> int:
 
     if 'xadd' == redis_command:
         result = client.xadd(name, {'content': content})
-      
+
     elif 'set' == redis_command:
         result = client.set(name, content)
-      
+
     elif 'lpush' == redis_command:
         result = client.lpush(name, content)
-      
+
     elif 'rpush' == redis_command:
         result = client.rpush(name, content)
     else:
-        raise ValueError('Unknown redis command "%".' % redis_command)
-      
-    return result # type: ignore
+        raise ValueError(
+            "Unknown redis command \"%s\"." % redis_command)
+
+    return result  # type: ignore
 
 
 def main():
     """main entry point for execution"""
 
-    argument_spec=dict(
+    argument_spec = dict(
         host=dict(type='str', default='localhost'),
         port=dict(type='int', default=6379),
         db=dict(type='str', default=1),
@@ -120,15 +120,12 @@ def main():
         redis_command=dict(
             type='str', default="set",
             choices=['xadd', 'set', 'lpush', 'rpush']))
-    
 
-    module = AnsibleModule(
-    argument_spec=argument_spec,
-    )
+    module = AnsibleModule(argument_spec=argument_spec)
 
     result = {
         "code": 0
-    }    
+    }
 
     try:
         result["response_status"] = upload_backup(module)
