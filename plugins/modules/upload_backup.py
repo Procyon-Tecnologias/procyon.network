@@ -81,7 +81,7 @@ exception:
 from ansible.module_utils.basic import AnsibleModule
 
 
-def safe(val: str | bytes | None | memoryview):
+def safe(val):
     if val is None:
         return None
 
