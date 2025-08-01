@@ -85,13 +85,16 @@ def safe(val: str | bytes | None | memoryview):
     if val is None:
         return None
 
+    if isinstance(val, memoryview):
+        val = val.tobytes()
+
+    if isinstance(val, bytes):
+        return val.decode('utf-8', errors='ignore')
+
     elif isinstance(val, str):
         return val.encode('utf-8', errors='ignore').decode('utf-8')
 
-    elif isinstance(val, memoryview):
-        return val.tobytes().decode('utf-8', errors='ignore')
-
-    return val.decode('utf-8', errors='ignore')
+    return val
 
 
 def upload_backup(module: AnsibleModule) -> requests.Response:
