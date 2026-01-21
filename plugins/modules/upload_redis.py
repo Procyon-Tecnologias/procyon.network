@@ -6,6 +6,8 @@ from __future__ import absolute_import, division, print_function
 
 import redis
 
+from ansible.module_utils.basic import AnsibleModule
+
 
 __metaclass__ = type
 
@@ -71,9 +73,6 @@ exception:
   type: str
   sample: "Connection to localhost timed out."
 """
-
-
-from ansible.module_utils.basic import AnsibleModule
 
 
 def upload_backup(module: AnsibleModule) -> int:

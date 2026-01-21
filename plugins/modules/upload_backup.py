@@ -6,6 +6,9 @@ from __future__ import absolute_import, division, print_function
 
 import requests
 
+from ansible.module_utils.basic import AnsibleModule
+from codecs import register_error
+
 
 __metaclass__ = type
 
@@ -78,10 +81,6 @@ exception:
 """
 
 
-from ansible.module_utils.basic import AnsibleModule
-from codecs import register_error
-
-
 def strict_handler(exception):
     return u"", exception.end
 
@@ -131,7 +130,6 @@ def upload_backup(module: AnsibleModule) -> requests.Response:
 
 def main():
     """main entry point for execution"""
-
 
     argument_spec = dict(
         url=dict(type='str', required=True),
